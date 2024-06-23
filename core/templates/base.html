@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{% block head_title %} Amar Bank {% endblock %}</title>
+
+    <!-- adding tailwind unpkg tailwind.min.css -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/tailwindcss@2.0.1/dist/tailwind.min.css"
+    />
+
+    <!-- additional style for footer positioning -->
+    <style>
+      footer {
+        position: fixed !important;
+        bottom: 0 !important;
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body class="bg-indigo-600">
+    <!-- including navbar from 'navbar.html' file -->
+    {% include 'navbar.html' %}
+
+    <!-- block body -->
+    {% block body %}
+
+    <div class="lg:container lg:mx-auto mb-20">
+      <!-- to display the relevant messages -->
+      {% include 'messages.html' %}
+
+      <!-- block content strats -->
+      {% block content %}
+      <!-- block content ends -->
+      {% endblock %}
+    </div>
+
+    {% include 'footer.html' %}
+
+    <!-- block ends -->
+    {% endblock %}
+  </body>
+</html>
