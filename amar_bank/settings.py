@@ -24,7 +24,6 @@ environ.Env.read_env()
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-yn*#v((z7#a+1eu#xui=p_)g&s)_5+btx#t_xzlt$t-=308fw^'
 
 # Secret key accessed from .env file
 SECRET_KEY = env("SECRET_KEY")
@@ -86,7 +85,8 @@ WSGI_APPLICATION = 'amar_bank.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-# Default database settings (sqlite3)
+# # Default database settings (sqlite3)
+# # Easy to use for On render deployment
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
@@ -95,7 +95,7 @@ WSGI_APPLICATION = 'amar_bank.wsgi.application'
 # }
 
 
-# উল্লেখিত sqlite3 ‍database এর বদলে project এর postgresql ব্যবহার করতে (সরাসরি)..
+# # উল্লেখিত sqlite3 ‍database এর বদলে project এর postgresql ব্যবহার করতে (সরাসরি)..
 # DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.postgresql',
@@ -108,7 +108,7 @@ WSGI_APPLICATION = 'amar_bank.wsgi.application'
 # }
 
 
-# Database credentials accessed from .env file
+# Database credentials accessed from .env file (for postgresql)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
