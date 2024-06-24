@@ -34,8 +34,11 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# ["*"] means allowing all hosts to connect
 ALLOWED_HOSTS = ["*"]
 
+# To trust and allow CSRF token on deployment, adding our domain to CSRF_TRUSTED_ORIGINS list
+CSRF_TRUSTED_ORIGINS = ['https://amar-bank-fzma.onrender.com','https://*.127.0.0.1']
 
 # Application definition
 
