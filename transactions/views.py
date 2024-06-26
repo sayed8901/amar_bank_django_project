@@ -12,13 +12,16 @@ from django.utils import timezone
 
 from django.db.models import Sum
 
+from django.contrib.auth.models import User
+from accounts.models import UserBankAccount
+
 
 # importing LoginRequiredMixin to protect TransactionCreateMixin class so that only a logged in user can view these...
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Transaction
-from .forms import DepositForm, WithdrawForm, LoanRequestForm
-from .constants import DEPOSIT, WITHDRAWAL, LOAN, LOAN_PAID
+from .forms import DepositForm, WithdrawForm, LoanRequestForm, MoneyTransferForm
+from .constants import DEPOSIT, WITHDRAWAL, LOAN, LOAN_PAID, SEND_MONEY, RECEIVE_MONEY
 
 
 # to implement email sending functionality
@@ -284,5 +287,52 @@ class LoanListView(LoginRequiredMixin, ListView):
         return queryset
     
 
+
+
+# Money Transfer Class-based CreateView
+class MoneyTransferView(TransactionCreateMixin):    
+    form_class = MoneyTransferForm
+    title = 'Money Transfer'
+    template_name = 'transactions/money_transfer_form.html'
+    success_url = reverse_lazy('transaction_report')
+
+    def get_initial(self):
+        initial = {'transaction_type': SEND_MONEY}
+        return initial
+
+    def form_valid(self, form):
+        amount = form.cleaned_data.get('amount')
+        account_no = form.cleaned_data.get('account_number')
+ 
+        # receiver activity
+        receiver_account = UserBankAccount.objects.get(account_no = account_no)
+        receiver_account.balance += amount
+
+        receiver_account.save(
+            update_fields = ['balance']
+        )
+ 
+        receiver_transaction = Transaction(
+            amount = amount,
+            transaction_type = RECEIVE_MONEY,
+            account = receiver_account,
+            balance_after_transaction = receiver_account.balance
+        )
+        
+        receiver_transaction.save()
+ 
+
+        # sender activity
+        sender_account = self.request.user.account
+        sender_account.balance -= amount
+
+        sender_account.save(
+            update_fields = ['balance']
+        )
+ 
+        messages.success(self.request, f"{amount} has been sent to Account: {account_no}")
+
+        
+        return super().form_valid(form)
 
 

@@ -87,3 +87,11 @@ class LoanRequestForm(TransactionForm):
 
 
 
+# Money transfer form
+class MoneyTransferForm(TransactionForm):
+    account_number = forms.IntegerField()
+
+    class Meta:
+        model = Transaction
+        fields = ['transaction_type', 'amount']
+
