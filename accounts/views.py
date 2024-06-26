@@ -8,6 +8,14 @@ from django.urls import reverse_lazy
 
 from django.views import View
 
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+
+# to implement email sending functionality
+from django.core.mail import EmailMessage, EmailMultiAlternatives
+from django.template.loader import render_to_string
+
+
 
 
 # Create your views here.
@@ -77,3 +85,41 @@ class UserBankAccountUpdateView(View):
         
         return render(request, self.template_name, {'form': form})
     
+
+
+
+
+# function to change password using old password
+def password_change(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = PasswordChangeForm(user = request.user, data = request.POST)
+
+            if form.is_valid():
+                form.save()
+                # password update korbe
+                update_session_auth_hash(request, form.user)
+
+                # sending email notification
+                send_email = EmailMessage(
+                    'Password Change Notification', 
+                    'You have successfully changed your password.', 
+                    to = [request.user.email]
+                )
+
+                send_email.send()
+
+
+                return redirect('profile')
+            
+        else:
+            form = PasswordChangeForm(user = request.user)
+            
+        return render(request, 'accounts/password_change.html', {'form': form})
+    
+    else:
+        return redirect('login')
+    
+
+
+
