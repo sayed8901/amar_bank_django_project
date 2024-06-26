@@ -72,6 +72,8 @@ class WithdrawForm(TransactionForm):
                 f'You have {balance} $ in your account. '
                 'You can not withdraw more than your account balance'
             )
+        
+        
 
         return amount
 

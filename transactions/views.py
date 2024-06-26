@@ -31,12 +31,25 @@ from django.template.loader import render_to_string
 
 
 
-# creating a function to use send message functionality
+# creating a function to use send email functionality for transactions
 def send_transaction_email(user, amount, subject, template):
     send_email = EmailMultiAlternatives(subject, '', to = [user.email])
     message = render_to_string(template, {
         'user': user,
         'amount' : amount,
+    })
+    send_email.attach_alternative(message, 'text/html')
+
+    send_email.send()
+
+
+# creating a function to use send email functionality for money transfer
+def money_transfer_email(user, account_no, amount, subject, template):
+    send_email = EmailMultiAlternatives(subject, '', to = [user.email])
+    message = render_to_string(template, {
+        'user': user,
+        'amount' : amount,
+        'account_no': account_no,
     })
     send_email.attach_alternative(message, 'text/html')
 
@@ -302,37 +315,52 @@ class MoneyTransferView(TransactionCreateMixin):
 
     def form_valid(self, form):
         amount = form.cleaned_data.get('amount')
-        account_no = form.cleaned_data.get('account_number')
+        receiver_account_no = form.cleaned_data.get('account_number')
  
-        # receiver activity
-        receiver_account = UserBankAccount.objects.get(account_no = account_no)
-        receiver_account.balance += amount
-
-        receiver_account.save(
-            update_fields = ['balance']
-        )
- 
-        receiver_transaction = Transaction(
-            amount = amount,
-            transaction_type = RECEIVE_MONEY,
-            account = receiver_account,
-            balance_after_transaction = receiver_account.balance
-        )
+        if not UserBankAccount.objects.filter(account_no = receiver_account_no).exists():
+            messages.warning(self.request, f"Account number {receiver_account_no} does not exist.")
+            return redirect('home')
         
-        receiver_transaction.save()
- 
-
-        # sender activity
-        sender_account = self.request.user.account
-        sender_account.balance -= amount
-
-        sender_account.save(
-            update_fields = ['balance']
-        )
- 
-        messages.success(self.request, f"{amount} has been sent to Account: {account_no}")
-
+        elif receiver_account_no == self.request.user.account.account_no:
+            messages.warning(self.request, f"You can not transfer money to your own account.")
+            return redirect('home')
         
+        else:
+            # receiver activity
+            receiver_account = UserBankAccount.objects.get(account_no = receiver_account_no)
+            receiver_account.balance += amount
+
+            receiver_account.save(
+                update_fields = ['balance']
+            )
+    
+            receiver_transaction = Transaction(
+                amount = amount,
+                transaction_type = RECEIVE_MONEY,
+                account = receiver_account,
+                balance_after_transaction = receiver_account.balance
+            )
+            
+            receiver_transaction.save()
+
+            # mail sending after money received
+            money_transfer_email(receiver_account.user, self.request.user.account, amount, 'Money Received Message', 'transactions/money_received_email.html')
+    
+
+            # sender activity
+            sender_account = self.request.user.account
+            sender_account.balance -= amount
+
+            sender_account.save(
+                update_fields = ['balance']
+            )
+    
+            messages.success(self.request, f"{amount} has been sent to Account: {receiver_account_no}")
+
+            # mail sending after money sent
+            money_transfer_email(self.request.user, receiver_account, amount, 'Money Sent Message', 'transactions/money_sent_email.html')
+
+            
         return super().form_valid(form)
 
 
