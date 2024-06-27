@@ -1,5 +1,6 @@
 from django import forms
 from .models import Transaction
+from core.models import Amar_bank
 
 class TransactionForm(forms.ModelForm):
     class Meta:
@@ -57,25 +58,35 @@ class WithdrawForm(TransactionForm):
 
         amount = self.cleaned_data.get('amount') # user er fill up kora form theke amra amount field er value ke niye aslam
 
-        if amount < min_withdraw_amount:
-            raise forms.ValidationError(
-                f'You can withdraw at least {min_withdraw_amount} $'
-            )
 
-        if amount > max_withdraw_amount:
-            raise forms.ValidationError(
-                f'You can withdraw at most {max_withdraw_amount} $'
-            )
+        bank = Amar_bank.objects.get(bank_name='Amar Bank')
+        print(bank)
+        # print(bank.is_bankrupt)
 
-        if amount > balance: 
+        if bank.is_bankrupt:
             raise forms.ValidationError(
-                f'You have {balance} $ in your account. '
-                'You can not withdraw more than your account balance'
+                f"You can not withdraw any amount from this bank as '{bank.bank_name}' has been declared as bankrupt."
             )
-        
+        else:
+            if amount < min_withdraw_amount:
+                raise forms.ValidationError(
+                    f'You can withdraw at least {min_withdraw_amount} $'
+                )
+
+            if amount > max_withdraw_amount:
+                raise forms.ValidationError(
+                    f'You can withdraw at most {max_withdraw_amount} $'
+                )
+
+            if amount > balance: 
+                raise forms.ValidationError(
+                    f'You have {balance} $ in your account. '
+                    'You can not withdraw more than your account balance'
+                )         
         
 
         return amount
+
 
 
 
@@ -86,6 +97,7 @@ class LoanRequestForm(TransactionForm):
 
         return amount
     
+
 
 
 
