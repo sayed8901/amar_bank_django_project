@@ -80,7 +80,7 @@ class WithdrawForm(TransactionForm):
 
             if amount > balance: 
                 raise forms.ValidationError(
-                    f'You have {balance} $ in your account. '
+                    f'You have {balance} $ in your account.'
                     'You can not withdraw more than your account balance'
                 )         
         
