@@ -11,7 +11,6 @@ class TransactionForm(forms.ModelForm):
     # user er account ta ekhane pass kore dibo
     def __init__(self, *args, **kwargs):
         self.account = kwargs.pop('account') # (views theke) account value ke pop kore anlam
-        # self.account = kwargs.get('account') # (views theke) account value ke anlam
 
         super().__init__(*args, **kwargs)
 
