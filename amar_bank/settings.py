@@ -98,14 +98,14 @@ WSGI_APPLICATION = 'amar_bank.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-# # Default database settings (sqlite3)
-# # Easy to use for On render deployment
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+# Default database settings (sqlite3)
+# Easy to use for On render deployment
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # # উল্লেখিত sqlite3 ‍database এর বদলে project এর postgresql ব্যবহার করতে (সরাসরি)..
@@ -134,14 +134,14 @@ WSGI_APPLICATION = 'amar_bank.wsgi.application'
 # }
 
 
-# Database configuration for PostgreSQL with on-render development server
-# Replace the SQLite DATABASES configuration with PostgreSQL:
-DATABASES = {
-    'default': dj_database_url.config(
-        # Replace this value with your local database's connection string.
-        default='postgresql://amar_bank_6712_user:qyL3QfoNrCd0WAgckimzPcA4gxheucUP@dpg-cpskl308fa8c73994q4g-a.oregon-postgres.render.com/amar_bank_6712',
-    )
-}
+# # Database configuration for PostgreSQL with on-render development server
+# # Replace the SQLite DATABASES configuration with PostgreSQL:
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         # Replace this value with your local database's connection string.
+#         default='postgresql://amar_bank_6712_user:qyL3QfoNrCd0WAgckimzPcA4gxheucUP@dpg-cpskl308fa8c73994q4g-a.oregon-postgres.render.com/amar_bank_6712',
+#     )
+# }
 
 
 # Password validation
